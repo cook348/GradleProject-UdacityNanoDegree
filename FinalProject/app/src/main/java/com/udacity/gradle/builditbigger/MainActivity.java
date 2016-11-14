@@ -1,14 +1,19 @@
 package com.udacity.gradle.builditbigger;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+
+import com.cookapps.jokeactivitylibrary.DisplayJokeActivity;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements RetrieveJokesTask.RetrieveJokeListener {
+
+    private ProgressDialog mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +45,17 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void tellJoke(View view) {
-        Toast.makeText(this, "derp", Toast.LENGTH_SHORT).show();
+        mProgress = ProgressDialog.show(this, getString(R.string.please_wait), getString(R.string.joke_loading));
+        new RetrieveJokesTask(this).execute();
+
     }
 
 
+    @Override
+    public void onComplete(String joke) {
+        mProgress.dismiss();
+        Intent intent = new Intent(this, DisplayJokeActivity.class);
+        intent.putExtra(DisplayJokeActivity.EXTRA_JOKE, joke);
+        this.startActivity(intent);
+    }
 }
